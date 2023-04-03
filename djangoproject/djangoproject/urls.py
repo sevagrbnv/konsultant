@@ -18,7 +18,7 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from api.views import SNTViewView, UserListView, UserDetailView
-from test_app.views import index_page, WorkerView
+from test_app.views import index_page
 
 #router = routers.DefaultRouter()
 #router.register(r'api/users', UserListView.as_view(), basename='users')
