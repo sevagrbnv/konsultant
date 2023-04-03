@@ -15,21 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from rest_framework.routers import SimpleRouter
+from rest_framework.urlpatterns import format_suffix_patterns
 
-from login.views import UserView, SntView
+from api.views import SNTViewView, UserListView, UserDetailView
 from test_app.views import index_page, WorkerView
 
-router = SimpleRouter()
-
-router.register('api/workers', WorkerView, basename='Worker')
-router.register('api/snt', SntView, basename='SNT')
-router.register('api/users', UserView, basename='Users')
-#router.register('api/users/login', UserView.as_view({'post': 'login'}), basename='login')
+#router = routers.DefaultRouter()
+#router.register(r'api/users', UserListView.as_view(), basename='users')
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", index_page),
+    path("test", index_page),
+    path("api/snt", SNTViewView.as_view()),
+    path("api/users", UserListView.as_view()),
+    path('api/users/<str:email>/<str:password>', UserDetailView.as_view()),
 ]
 
-urlpatterns += router.urls
+urlpatterns = format_suffix_patterns(urlpatterns)
+#urlpatterns += router.urls
