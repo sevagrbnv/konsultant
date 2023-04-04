@@ -7,7 +7,7 @@ class Meeting(models.Model):
     time = models.CharField(max_length=10)
     date = models.CharField(max_length=10)
     place = models.CharField(max_length=100)
-    snt_id = models.ForeignKey(SNT, on_delete=models.CASCADE)
+    snt_id = models.ForeignKey(SNT, on_delete=models.CASCADE, related_name='meetings')
     type = models.CharField(max_length=20)
 
     def __str__(self):

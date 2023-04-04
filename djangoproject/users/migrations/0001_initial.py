@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
                 (
                     "snt",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="api.snt"
+                        on_delete=django.db.models.deletion.CASCADE, to="users.snt"
                     ),
                 ),
             ],

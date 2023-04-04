@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("api", "0004_meeting"),
+        ("users", "0004_meeting"),
     ]
 
     operations = [

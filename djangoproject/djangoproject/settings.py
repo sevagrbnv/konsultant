@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'test_app',
-    'api',
+    'users',
     'meetings',
     'snts',
     'docs',

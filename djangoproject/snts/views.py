@@ -8,3 +8,9 @@ from snts.serializers import SNTSerializer
 class SNTView(generics.ListCreateAPIView):
     queryset = SNT.objects.all()
     serializer_class = SNTSerializer
+
+
+class ALL(generics.ListAPIView):
+    queryset = SNT.objects.all()
+    serializer_class = SNTSerializer
+    filterset_fields = ['id']
