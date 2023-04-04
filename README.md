@@ -6,8 +6,6 @@ django-filter
 
 djangorestframework
 
-получение всех снт
-http://127.0.0.1:8000/api/snt/
-
-получение всех юзеров (+ фильтр по snt_id)
-http://127.0.0.1:8000/api/users/?snt_id=1
+./manage.py makemigrations или python manage.py makemigrations
+./manage.py migrate или python manage.py migrate
+./manage.py runserver или python manage.py runserver
