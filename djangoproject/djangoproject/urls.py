@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from api.views import SNTViewView, UserListView, UserDetailView
+from api.views import SNTViewView, UserListView, UserDetailView, MeetingListView, MeetingDetailView
 from test_app.views import index_page
 
 #router = routers.DefaultRouter()
@@ -26,9 +26,14 @@ from test_app.views import index_page
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("test", index_page),
+
     path("api/snt", SNTViewView.as_view()),
+
     path("api/users", UserListView.as_view()),
     path('api/users/<str:email>/<str:password>', UserDetailView.as_view()),
+
+    path("api/meetings", MeetingListView.as_view()),
+    path('api/meetings/<int:id>/', MeetingDetailView.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
