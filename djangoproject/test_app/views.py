@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
 
 from test_app.models import Worker
+from test_app.serializers import WorkerSerializer
 
 
 def index_page(request):
@@ -28,5 +30,9 @@ def index_page(request):
     # return render(request, 'index.html')
 
     workers = Worker.objects.all()
-
     return render(request, 'index.html', context={'data': workers})
+
+
+class WorkerView(ModelViewSet):
+    queryset = Worker.objects.all()
+    serializer_class = WorkerSerializer
