@@ -20,8 +20,10 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from api.views import UserListView, UserDetailView
 from docs.views import DocDetailView, DocListView
 from meetings.views import MeetingListView, MeetingDetailView
+from questions.views import QuestionListView, QuestionDetailView
 from snts.views import SNTView
 from test_app.views import index_page
+from votes.views import VoteDetailView, VoteListView
 
 #router = routers.DefaultRouter()
 #router.register(r'api/users', UserListView.as_view(), basename='users')
@@ -41,6 +43,12 @@ urlpatterns = [
 
     path('api/docs', DocListView.as_view()),
     path('api/docs/<int:id>/', DocDetailView.as_view()),
+
+    path('api/quests', QuestionListView.as_view()),
+    path('api/quests/<int:id>/', QuestionDetailView.as_view()),
+
+    path('api/votes', VoteListView.as_view()),
+    path('api/votes/<int:id>/', VoteDetailView.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

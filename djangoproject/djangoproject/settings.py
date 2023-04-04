@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'meetings',
     'snts',
     'docs',
+    'questions',
+    'votes',
 ]
 INSTALLED_APPS += ["django_filters"]
 
