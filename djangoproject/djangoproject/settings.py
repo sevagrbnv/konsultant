@@ -35,19 +35,27 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'rest_framework',
+    'corsheaders',
     'test_app',
-    'api'
+    'users',
+    'meetings',
+    'snts',
+    'docs',
+    'questions',
+    'votes',
 ]
 INSTALLED_APPS += ["django_filters"]
 
 MIDDLEWARE = [
-    #"django.middleware.security.SecurityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    #"django.middleware.common.CommonMiddleware",
-    #"django.middleware.csrf.CsrfViewMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    #"django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "djangoproject.urls"
@@ -120,6 +128,9 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
@@ -130,11 +141,13 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.OrderingFilter",
     ),
-
 }
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://example.com',]
-CORS_ORIGIN_WHITELIST = ['http://localhost:8000', ]
-CORS_ORIGIN_WHITELIST = ( 'localhost:8000', )
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:3000', 'http://example.com']
+CORS_ORIGIN_WHITELIST = ['http://localhost:8000', 'http://localhost:3000', 'https://localhost:8000']
+CORS_ORIGIN_WHITELIST = ('https://localhost:8000', 'http://localhost:3000')
 
 

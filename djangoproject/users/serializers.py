@@ -1,18 +1,6 @@
 from rest_framework import serializers
 
-from .models import User_snt, SNT, Meeting
-
-
-class SNTSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SNT
-        fields = ['id', 'name']
-
-
-class MeetingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Meeting
-        fields = ['id', 'date', 'time', 'snt_id', 'place', 'type']
+from .models import User_snt
 
 
 class User_sntProfileSerializer(serializers.ModelSerializer):

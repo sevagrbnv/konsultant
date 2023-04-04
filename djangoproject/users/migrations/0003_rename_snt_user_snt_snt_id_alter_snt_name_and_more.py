@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("api", "0002_user_snt_phone_alter_user_snt_password"),
+        ("users", "0002_user_snt_phone_alter_user_snt_password"),
     ]
 
     operations = [
