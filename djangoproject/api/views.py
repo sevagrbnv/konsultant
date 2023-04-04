@@ -28,10 +28,10 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = User_sntProfileSerializer
 
     def get_object(self):
-        user = User_snt.objects.get(email=self.kwargs['email'])
-        password = self.kwargs['password']
-        if (user.password != password):
-            return User_snt(email="Ошибка", password="Ошибка")
+        try:
+            user = User_snt.objects.get(email=self.kwargs['email'])
+        except User_snt.DoesNotExist:
+            user = None
         return user
 
 

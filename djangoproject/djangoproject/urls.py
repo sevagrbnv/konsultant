@@ -30,7 +30,7 @@ urlpatterns = [
     path("api/snt", SNTViewView.as_view()),
 
     path("api/users", UserListView.as_view()),
-    path('api/users/<str:email>/<str:password>', UserDetailView.as_view()),
+    path('api/users/<str:email>/', UserDetailView.as_view()),
 
     path("api/meetings", MeetingListView.as_view()),
     path('api/meetings/<int:id>/', MeetingDetailView.as_view()),
