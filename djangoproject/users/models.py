@@ -10,6 +10,7 @@ class User_snt(AbstractBaseUser):
     last_name = models.CharField(max_length=30, blank=True)
     first_name = models.CharField(max_length=30, blank=True)
     middle_name = models.CharField(max_length=30, blank=True)
+    address = models.CharField(max_length=30, blank=True)
     email = models.EmailField(max_length=255, unique=True)
     phone = models.CharField(max_length=15, blank=True)
     password = models.CharField(max_length=255)
