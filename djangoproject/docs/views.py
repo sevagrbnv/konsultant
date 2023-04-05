@@ -39,6 +39,7 @@ class FileUploadView(APIView):
 class FileDownloadView(APIView):
     def get(self, request, pk, format=None):
         try:
+        # Архив
             my_model = Doc.objects.get(id=pk)
             file_path = my_model.file.path
             response = FileResponse(open(file_path, 'rb'))
