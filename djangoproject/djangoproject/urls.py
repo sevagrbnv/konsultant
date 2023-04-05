@@ -3,7 +3,7 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from users.views import UserListView, UserDetailView
-from docs.views import DocDetailView, DocListView
+from docs.views import DocDetailView, DocListView, FileUploadView, FileDownloadView
 from meetings.views import MeetingListView, MeetingDetailView
 from questions.views import QuestionListView, QuestionDetailView
 from snts.views import SNTView, ALL
@@ -28,6 +28,9 @@ urlpatterns = [
 
     path('api/docs', DocListView.as_view()),
     path('api/docs/<int:id>/', DocDetailView.as_view()),
+
+    path('upload/', FileUploadView.as_view(), name='file-upload'),
+    path('download/<int:pk>/', FileDownloadView.as_view(), name='file-download'),
 
     path('api/quests', QuestionListView.as_view()),
     path('api/quests/<int:id>/', QuestionDetailView.as_view()),
