@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from meetings.serializers import MeetingSerializer, Meeting_ALL_Serializer
+from meetings.serializers import Meeting_ALL_Serializer
 from snts.models import SNT
 from users.models import User_snt
 
