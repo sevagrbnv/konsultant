@@ -1,13 +1,12 @@
-import os
-import tempfile
-import zipfile
-
-from django.http import FileResponse, Http404, HttpResponse
-from rest_framework import generics, views
+from django.http import FileResponse, Http404
+from rest_framework import generics
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+import tempfile
+import zipfile
+import os
+from django.http import HttpResponse
 from docs.models import Doc
 from docs.serializers import DocSerializer
 from meetings.models import Meeting
@@ -18,7 +17,6 @@ class DocListView(generics.ListCreateAPIView):
     serializer_class = DocSerializer
     filterset_fields = ['meeting_id']
 
-
 class DocDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Doc.objects.all()
     serializer_class = DocSerializer
@@ -28,10 +26,10 @@ class DocDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FileUploadView(APIView):
-    parser_classes = [MultiPartParser]
+    parser_classes = (MultiPartParser,)
 
     def post(self, request, format=None):
-        file_obj = request.FILES['file']
+        file_obj = request.data['file']
         name = request.data['name']
         type = request.data['type']
         meeting_id = int(request.data['meeting_id'])
@@ -53,7 +51,7 @@ class FileDownloadView(APIView):
             raise Http404
 
 
-class DocDownloadView(views.APIView):
+class DocDownloadView(APIView):
     def get(self, request, meeting_id):
         # Получить все объекты Doc с заданным meeting_id.
         docs = Doc.objects.filter(meeting_id=meeting_id)

@@ -8,7 +8,7 @@ from .serializers import User_sntSerializer, User_sntProfileSerializer
 class UserListView(generics.ListCreateAPIView):
     queryset = User_snt.objects.all()
     serializer_class = User_sntSerializer
-    filterset_fields = ['snt_id', 'is_gover', 'is_admin']
+    filterset_fields = ['snt_id']
 
     def post(self, request, format=None):
         serializer = User_sntProfileSerializer(data=request.data)

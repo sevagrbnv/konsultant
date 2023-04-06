@@ -5,7 +5,7 @@ from meetings.serializers import MeetingSerializer, Meeting_ALL_Serializer
 
 
 class MeetingListView(generics.ListCreateAPIView):
-    queryset = Meeting.objects.all().order_by('-notification_date')
+    queryset = Meeting.objects.all().order_by('-date')
     serializer_class = MeetingSerializer
     filterset_fields = ['snt_id']
 
@@ -26,7 +26,7 @@ class MeetingDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class Meeting_ALL_ListView(generics.ListCreateAPIView):
-    queryset = Meeting.objects.all().order_by('-notification_date')
+    queryset = Meeting.objects.all().order_by('-date')
     serializer_class = Meeting_ALL_Serializer
     filterset_fields = ['snt_id']
 
