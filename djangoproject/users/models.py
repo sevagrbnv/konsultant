@@ -10,9 +10,14 @@ class User_snt(AbstractBaseUser):
     last_name = models.CharField(max_length=30, blank=True)
     first_name = models.CharField(max_length=30, blank=True)
     middle_name = models.CharField(max_length=30, blank=True)
+    doc_id = models.IntegerField(default=0) #основание для внесения
+
+    square = models.DecimalField(max_digits=6, decimal_places=2)
     address = models.CharField(max_length=30, blank=True)
+
     email = models.EmailField(max_length=255, unique=True)
     phone = models.CharField(max_length=15, blank=True)
+
     password = models.CharField(max_length=255)
     snt_id = models.ForeignKey(SNT, on_delete=models.CASCADE)
     is_admin = models.BooleanField(default=False)
