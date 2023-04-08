@@ -10,5 +10,6 @@ class Question(models.Model):
     no = models.IntegerField(default=0)
     idk = models.IntegerField(default=0)
 
+
     def __str__(self):
         return f'{self.id} {self.question} {self.meeting_id}\n {self.yes}/{self.no}/{self.idk}'
