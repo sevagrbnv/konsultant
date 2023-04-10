@@ -1,14 +1,18 @@
+import os
+import tempfile
+import zipfile
+
+from django.core.files.base import ContentFile
 from django.http import FileResponse, Http404
-from rest_framework import generics
+from django.http import HttpResponse
+from rest_framework import generics, status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import tempfile
-import zipfile
-import os
-from django.http import HttpResponse
+
 from docs.models import Doc
-from docs.serializers import DocSerializer
+from docs.serializers import DocSerializer, NotificationSerializer, BulletinSerializer, MeetingProtocolSerializer, \
+    DecisionSerializer
 from meetings.models import Meeting
 
 
@@ -16,6 +20,7 @@ class DocListView(generics.ListCreateAPIView):
     queryset = Doc.objects.all().order_by('-id')
     serializer_class = DocSerializer
     filterset_fields = ['meeting_id']
+
 
 class DocDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Doc.objects.all()
@@ -51,7 +56,7 @@ class FileDownloadView(APIView):
             raise Http404
 
 
-class DocDownloadView(APIView):
+class ZipDownloadView(APIView):
     def get(self, request, meeting_id):
         # Получить все объекты Doc с заданным meeting_id.
         docs = Doc.objects.filter(meeting_id=meeting_id)
@@ -83,3 +88,68 @@ class DocDownloadView(APIView):
             os.unlink(temp_file.name)
 
             return response
+
+
+class DocCreateView(generics.CreateAPIView):
+    queryset = Doc.objects.all()
+    serializer_class = None
+
+    def post(self, request, *args, **kwargs):
+        meeting_id = request.data.get('meeting_id')
+        doc_type = request.data.get('doc_type')
+
+        if not meeting_id or not doc_type:
+            return Response(
+                {'error': 'meeting_id and doc_type are required fields'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get the corresponding meeting object from the database
+        meeting = Meeting.objects.filter(id=meeting_id).first()
+
+        if not meeting:
+            return Response(
+                {'error': f'Meeting with id={meeting_id} not found'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Choose the appropriate serializer based on the doc_type field
+        if doc_type == 'Уведомление':
+            serializer_class = NotificationSerializer
+            doc_template = 'doc_templates/notification.docx'
+        elif doc_type == 'Бюллетень':
+            serializer_class = BulletinSerializer
+            doc_template = 'doc_templates/bulletin.docx'
+        elif doc_type == 'ПротоколСобрания':
+            serializer_class = MeetingProtocolSerializer
+            doc_template = 'doc_templates/protocol.docx'
+        elif doc_type == 'Решение':
+            serializer_class = DecisionSerializer
+            doc_template = 'doc_templates/decision.docx'
+        else:
+            return Response(
+                {'error': f'Document type "{doc_type}" is not supported'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Deserialize the request data using the appropriate serializer
+        serializer = serializer_class(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        with open(doc_template, 'rb') as file:
+            file_data = file.read()
+        django_file = ContentFile(file_data)
+
+        doc = Doc(name=doc_type + '_' + meeting_id,
+                  type=doc_type,
+                  meeting_id=meeting)
+        doc.file.save(f'{doc_type}_{meeting_id}.docx', django_file)
+        doc.save()
+
+        # Return the serialized data of the created document
+        return Response({
+            "data": "Success",
+            "id": doc.id
+        }, status=status.HTTP_201_CREATED)

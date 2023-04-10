@@ -13,4 +13,11 @@ class Doc(models.Model):
         return f'{self.id} {self.name} {self.type} {self.meeting_id}'
 
 
+class DocTemp(models.Model):
+    doc_type = models.CharField(max_length=50)
+    meeting_id = models.IntegerField
+
+    def __str__(self):
+        return f'{self.id} {self.name} {self.type} {self.meeting_id}'
+
 

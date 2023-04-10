@@ -11,15 +11,15 @@ class QuestionSerializer(serializers.ModelSerializer):
     zaoch_idk = serializers.SerializerMethodField()
 
     def get_zaoch_yes(self, obj):
-        filterargs = {'question_id': obj.id, 'type': 0}
-        return Vote.objects.filter(**filterargs).count()
-
-    def get_zaoch_no(self, obj):
         filterargs = {'question_id': obj.id, 'type': 1}
         return Vote.objects.filter(**filterargs).count()
 
+    def get_zaoch_no(self, obj):
+        filterargs = {'question_id': obj.id, 'type': -1}
+        return Vote.objects.filter(**filterargs).count()
+
     def get_zaoch_idk(self, obj):
-        filterargs = {'question_id': obj.id, 'type': 2}
+        filterargs = {'question_id': obj.id, 'type': 0}
         return Vote.objects.filter(**filterargs).count()
 
     class Meta:

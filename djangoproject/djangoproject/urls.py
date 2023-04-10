@@ -3,11 +3,10 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from users.views import UserListView, UserDetailView
-from docs.views import DocDetailView, DocListView, FileUploadView, FileDownloadView, DocDownloadView
+from docs.views import DocDetailView, DocListView, FileUploadView, FileDownloadView, ZipDownloadView, DocCreateView
 from meetings.views import MeetingListView, MeetingDetailView
 from questions.views import QuestionListView, QuestionDetailView
 from snts.views import SNTView, ALL
-from test_app.views import index_page
 from votes.views import VoteDetailView, VoteListView
 
 #router = routers.DefaultRouter()
@@ -15,7 +14,6 @@ from votes.views import VoteDetailView, VoteListView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("test", index_page),
 
     path('api/snt', SNTView.as_view()),
     path('api/snt/', SNTView.as_view()),
@@ -30,9 +28,10 @@ urlpatterns = [
     path('api/docs/<int:id>/', DocDetailView.as_view()),
 
     path('upload/', FileUploadView.as_view(), name='file-upload'),
+    path('create', DocCreateView.as_view(), name='file-create'),
     # @deprecated
     path('download/<int:pk>/', FileDownloadView.as_view(), name='file-download'),
-    path('docs/download/<int:meeting_id>/', DocDownloadView.as_view(), name='doc-download'),
+    path('docs/download/<int:meeting_id>/', ZipDownloadView.as_view(), name='zip-download'),
 
     path('api/quests', QuestionListView.as_view()),
     path('api/quests/<int:id>/', QuestionDetailView.as_view()),
