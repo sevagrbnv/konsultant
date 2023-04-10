@@ -12,7 +12,7 @@ class User_snt(AbstractBaseUser):
     middle_name = models.CharField(max_length=30, blank=True)
     doc_id = models.IntegerField(default=0) #основание для внесения
 
-    square = models.DecimalField(max_digits=6, decimal_places=2)
+    square = models.DecimalField(max_digits=6, decimal_places=2, default=25)
     address = models.CharField(max_length=30, blank=True)
 
     email = models.EmailField(max_length=255, unique=True)
