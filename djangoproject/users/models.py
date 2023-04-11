@@ -7,16 +7,16 @@ from snts.models import SNT
 
 class User_snt(AbstractBaseUser):
     username = None
-    last_name = models.CharField(max_length=30, blank=True)
-    first_name = models.CharField(max_length=30, blank=True)
-    middle_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    middle_name = models.CharField(max_length=100, blank=True)
     doc_id = models.IntegerField(default=0) #основание для внесения
 
-    square = models.DecimalField(max_digits=6, decimal_places=2, default=25)
-    address = models.CharField(max_length=30, blank=True)
+    square = models.DecimalField(max_digits=8, decimal_places=2, default=25)
+    address = models.CharField(max_length=100, blank=True)
 
     email = models.EmailField(max_length=255, unique=True)
-    phone = models.CharField(max_length=15, blank=True)
+    phone = models.CharField(max_length=100, blank=True)
 
     password = models.CharField(max_length=255)
     snt_id = models.ForeignKey(SNT, on_delete=models.CASCADE)
