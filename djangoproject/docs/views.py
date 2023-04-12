@@ -47,10 +47,10 @@ class FileUploadView(APIView):
 class FileDownloadView(APIView):
     def get(self, request, pk, format=None):
         try:
-            my_model = Doc.objects.get(id=pk)
-            file_path = my_model.file.path
+            model = Doc.objects.get(id=pk)
+            file_path = model.file.path
             response = FileResponse(open(file_path, 'rb'))
-            response['Content-Disposition'] = 'attachment; filename="{}"'.format(my_model.file.name)
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(model.file.name)
             return response
         except Doc.DoesNotExist:
             raise Http404
@@ -103,8 +103,6 @@ class DocCreateView(generics.CreateAPIView):
                 {'error': 'meeting_id and doc_type are required fields'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        # Get the corresponding meeting object from the database
         meeting = Meeting.objects.filter(id=meeting_id).first()
 
         if not meeting:
@@ -113,7 +111,6 @@ class DocCreateView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Choose the appropriate serializer based on the doc_type field
         if doc_type == 'Уведомление':
             serializer_class = NotificationSerializer
             doc_template = 'doc_templates/notification.docx'
@@ -132,9 +129,7 @@ class DocCreateView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Deserialize the request data using the appropriate serializer
         serializer = serializer_class(data=request.data)
-
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

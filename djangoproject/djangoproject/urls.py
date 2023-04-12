@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from users.views import UserListView, UserDetailView
+from users.views import UserListView, UserDetailView, VotedUserListView
 from docs.views import DocDetailView, DocListView, FileUploadView, FileDownloadView, ZipDownloadView, DocCreateView
 from meetings.views import MeetingListView, MeetingDetailView
 from questions.views import QuestionListView, QuestionDetailView
@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('api/users', UserListView.as_view()),
     path('api/users/<str:email>/', UserDetailView.as_view()),
+    path('api/voted_users', VotedUserListView.as_view()),
 
     path('api/meetings', MeetingListView.as_view()),
     path('api/meetings/<int:id>/', MeetingDetailView.as_view()),
