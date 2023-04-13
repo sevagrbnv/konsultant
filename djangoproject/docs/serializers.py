@@ -14,7 +14,7 @@ class DocSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Doc
-        fields = ['id', 'name', 'meeting_id', 'download_link']
+        fields = ['id', 'meeting_id', 'download_link']
 
 
 # Уведомление, Бюллетень, Протокол Правления, Протокол собрания и Решение

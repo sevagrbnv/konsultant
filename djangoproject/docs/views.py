@@ -13,7 +13,9 @@ from rest_framework.views import APIView
 from docs.models import Doc
 from docs.serializers import DocSerializer, NotificationSerializer, BulletinSerializer, MeetingProtocolSerializer, \
     DecisionSerializer
+from meetings.ProtocolParser import ProtocolParser
 from meetings.models import Meeting
+from questions.models import Question
 
 
 class DocListView(generics.ListCreateAPIView):
@@ -35,13 +37,31 @@ class FileUploadView(APIView):
 
     def post(self, request, format=None):
         file_obj = request.data['file']
-        name = request.data['name']
-        type = request.data['type']
         meeting_id = int(request.data['meeting_id'])
         meeting = Meeting.objects.get(pk=meeting_id)
-        my_model = Doc(name=name, type=type, meeting_id=meeting, file=file_obj)
+        my_model = Doc(meeting_id=meeting, file=file_obj)
         my_model.save()
-        return Response({'message': 'File created', 'id': my_model.id})
+
+        doc = ProtocolParser(my_model.file.path)
+        dates = doc.get_list_of_dates()
+        times = doc.get_list_of_times()
+        form = doc.get_form()
+        type = doc.get_type()
+        place = doc.get_place(form=form)
+        questions = doc.get_questions()
+        string_date = doc.format_datetime(form=form, dates=dates, times=times)
+
+        meeting.date = string_date
+        meeting.place = place
+        meeting.type = type
+        meeting.form = form
+        meeting.save()
+
+        for parsed_question in questions:
+            questModel = Question(meeting_id=meeting, question=parsed_question)
+            questModel.save()
+
+        return Response({'message': 'File created', 'id': my_model.id, 'questions': questions})
 
 
 class FileDownloadView(APIView):
