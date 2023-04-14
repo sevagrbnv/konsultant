@@ -53,17 +53,17 @@ class ProtocolParser:
         return questions
 
     def format_datetime(self, form, dates, times):
-        if form == 'очной':  # 2 1
+        if form == 'очной':
             return f'{times[0]}-{times[1]} {dates[0]}'
-        elif form == 'заочной':  # 2 2
+        elif form == 'заочной':
             return f'{times[0]}-{times[1]} {dates[0]}-{dates[1]}'
-        else:  # 4 3
+        else:
             return f'{times[0]}-{times[1]} {dates[0]} / {times[2]}-{times[3]} {dates[1]}-{dates[2]}'
 
     def get_place(self, form):
-        if form == 'очной':  # 2 1
+        if form == 'очной':
             return 'Ул. Ленина, д.14'
-        elif form == 'заочной':  # 2 2
+        elif form == 'заочной':
             return 'Сайт СНТ'
-        else:  # 4 3
+        else:
             return 'Ул. Ленина, д.14 / Сайт СНТ'

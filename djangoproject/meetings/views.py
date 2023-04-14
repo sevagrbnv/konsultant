@@ -7,7 +7,7 @@ from meetings.serializers import MeetingSerializer, Meeting_ALL_Serializer
 class MeetingListView(generics.ListCreateAPIView):
     queryset = Meeting.objects.all().order_by('-date')
     serializer_class = MeetingSerializer
-    filterset_fields = ['snt_id']
+    filterset_fields = ['snt_id', 'is_solved']
 
     def post(self, request, format=None):
         serializer = MeetingSerializer(data=request.data)

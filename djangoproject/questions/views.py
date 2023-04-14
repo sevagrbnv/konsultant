@@ -8,7 +8,7 @@ from questions.serializers import QuestionSerializer, Question_ALL_Serializer
 class QuestionListView(generics.ListCreateAPIView):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
-    filterset_fields = ['meeting_id']
+    filterset_fields = ['meeting_id', 'isMadePositiveDecision']
 
     def post(self, request, format=None):
         serializer = QuestionSerializer(data=request.data)
