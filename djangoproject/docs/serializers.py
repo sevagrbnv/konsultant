@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from docs.models import Doc, DocTemp
+from docs.models import Doc
 
 
 class DocSerializer(serializers.ModelSerializer):
@@ -16,31 +16,3 @@ class DocSerializer(serializers.ModelSerializer):
         model = Doc
         fields = ['id', 'meeting_id', 'download_link']
 
-
-# Уведомление, Бюллетень, Протокол Правления, Протокол собрания и Решение
-class NotificationSerializer(serializers.ModelSerializer):
-    # field1 = serializers.CharField()
-    # field2 = serializers.IntegerField()
-    # field3 = serializers.DateField()
-
-    class Meta:
-        model = DocTemp
-        fields = '__all__'
-
-
-class BulletinSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DocTemp
-        fields = '__all__'
-
-
-class MeetingProtocolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DocTemp
-        fields = '__all__'
-
-
-class DecisionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DocTemp
-        fields = '__all__'

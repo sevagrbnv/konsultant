@@ -18,27 +18,23 @@ class ProtocolParser:
 
     def get_list_of_dates(self):
         date_regex = r"\d{2}\.\d{2}\.\d{4}"
-        date_list = re.findall(date_regex, self.result_text)
-        return date_list
+        return re.findall(date_regex, self.result_text)
 
     def get_list_of_times(self):
         time_regex = r"\d{2} час. \d{2} мин."
         time_list = re.findall(time_regex, self.result_text)
         time_objs = [datetime.strptime(t, '%H час. %M мин.') for t in time_list]
-        formatted_times = [t.strftime('%H:%M') for t in time_objs]
-        return formatted_times
+        return [t.strftime('%H:%M') for t in time_objs]
 
     def get_form(self):
         form_regex = r"очной|заочной|очно-заочной"
         form_match = re.search(form_regex, self.result_text)
-        form = form_match.group(0)
-        return form
+        return form_match.group(0)
 
     def get_type(self):
         type_regex = r"очередное|внеочередное"
         type_match = re.search(type_regex, self.result_text)
-        type = type_match.group(0)
-        return type
+        return type_match.group(0)
 
     def get_questions(self):
         need_to_write = False
@@ -67,3 +63,9 @@ class ProtocolParser:
             return 'Сайт СНТ'
         else:
             return 'Ул. Ленина, д.14 / Сайт СНТ'
+
+    def get_protocol_creating_date(self):
+        paragraph = self.doc.paragraphs[0]
+        date_regex = r"\d{2}\.\d{2}\.\d{4}"
+        match = re.search(date_regex, paragraph.text)
+        return match.group(0)

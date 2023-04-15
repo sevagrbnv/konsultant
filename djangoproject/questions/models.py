@@ -6,6 +6,7 @@ from meetings.models import Meeting
 class Question(models.Model):
     meeting_id = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name='questions')
     question = models.CharField(max_length=256, blank=False)
+    decision = models.CharField(max_length=256, blank=False)
     isMadePositiveDecision = models.BooleanField(default=False)
     yes = models.IntegerField(default=0)
     no = models.IntegerField(default=0)

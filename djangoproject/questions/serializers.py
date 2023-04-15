@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
+from Utils.VoteCounter import voteCount
 from questions.models import Question
-from votes.models import Vote
 from votes.serializers import VoteSerializer
 
 
@@ -11,16 +11,13 @@ class QuestionSerializer(serializers.ModelSerializer):
     zaoch_idk = serializers.SerializerMethodField()
 
     def get_zaoch_yes(self, obj):
-        filterargs = {'question_id': obj.id, 'type': 1}
-        return Vote.objects.filter(**filterargs).count()
+        return voteCount(obj=obj, type=1)
 
     def get_zaoch_no(self, obj):
-        filterargs = {'question_id': obj.id, 'type': -1}
-        return Vote.objects.filter(**filterargs).count()
+        return voteCount(obj=obj, type=-1)
 
     def get_zaoch_idk(self, obj):
-        filterargs = {'question_id': obj.id, 'type': 0}
-        return Vote.objects.filter(**filterargs).count()
+        return voteCount(obj=obj, type=0)
 
     class Meta:
         model = Question

@@ -1,7 +1,9 @@
 import os
 import tempfile
 import zipfile
+from datetime import datetime
 
+from django.core.files import File
 from django.core.files.base import ContentFile
 from django.http import FileResponse, Http404
 from django.http import HttpResponse
@@ -10,12 +12,17 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from Utils.BulletinCreator import create_bulletin
+from Utils.DecisionCreator import create_decision
+from Utils.NotificationCretor import create_notification
+from Utils.ProtocolCreator import create_protocol
+from Utils.VoteCounter import voteCount
 from docs.models import Doc
-from docs.serializers import DocSerializer, NotificationSerializer, BulletinSerializer, MeetingProtocolSerializer, \
-    DecisionSerializer
-from meetings.ProtocolParser import ProtocolParser
+from docs.serializers import DocSerializer
+from Utils.ProtocolParser import ProtocolParser
 from meetings.models import Meeting
 from questions.models import Question
+from questions.serializers import QuestionSerializer
 
 
 class DocListView(generics.ListCreateAPIView):
@@ -32,6 +39,7 @@ class DocDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Doc.objects.get(id=self.kwargs['id'])
 
 
+# Загрузка на сервер
 class FileUploadView(APIView):
     parser_classes = (MultiPartParser,)
 
@@ -43,6 +51,7 @@ class FileUploadView(APIView):
         my_model.save()
 
         doc = ProtocolParser(my_model.file.path)
+        protocol_date = doc.get_protocol_creating_date()
         dates = doc.get_list_of_dates()
         times = doc.get_list_of_times()
         form = doc.get_form()
@@ -52,6 +61,7 @@ class FileUploadView(APIView):
         string_date = doc.format_datetime(form=form, dates=dates, times=times)
 
         meeting.date = string_date
+        meeting.protocol_date = protocol_date
         meeting.place = place
         meeting.type = type
         meeting.form = form
@@ -61,9 +71,32 @@ class FileUploadView(APIView):
             questModel = Question(meeting_id=meeting, question=parsed_question)
             questModel.save()
 
-        return Response({'message': 'File created', 'id': my_model.id, 'questions': questions})
+        current_date = datetime.today().strftime('%d.%m.%Y')
+        bulletin = create_bulletin('doc_templates/bulleten_form.docx', type, meeting.date, form, questions)
+        notification = create_notification('doc_templates/notification_form.docx', type, string_date, form, questions,
+                                           protocol_date,
+                                           current_date + 'г.')
+
+        with open(f'./uploads/{bulletin}', 'rb') as f:
+            file_data = f.read()
+        django_file = ContentFile(file_data)
+        my_file = File(file_data)
+        my_model = Doc(meeting_id=meeting)
+        my_model.file.save(f'Бюллетень_{meeting_id}.docx', django_file)
+        my_model.save()
+
+        with open(f'./uploads/{notification}', 'rb') as f:
+            file_data = f.read()
+        django_file = ContentFile(file_data)
+        my_file = File(file_data)
+        my_model = Doc(meeting_id=meeting)
+        my_model.file.save(f'Уведомление_{meeting_id}.docx', django_file)
+        my_model.save()
+
+        return Response({'message': 'Files created', 'meeting_id': meeting_id, 'questions': questions})
 
 
+# Скачивание одного документа
 class FileDownloadView(APIView):
     def get(self, request, pk, format=None):
         try:
@@ -76,9 +109,9 @@ class FileDownloadView(APIView):
             raise Http404
 
 
+# Скачивание архива по meeting_id
 class ZipDownloadView(APIView):
     def get(self, request, meeting_id):
-        # Получить все объекты Doc с заданным meeting_id.
         docs = Doc.objects.filter(meeting_id=meeting_id)
 
         # Создать временный каталог для сохранения файлов.
@@ -110,61 +143,56 @@ class ZipDownloadView(APIView):
             return response
 
 
-class DocCreateView(generics.CreateAPIView):
-    queryset = Doc.objects.all()
-    serializer_class = None
+class DecisionDataView(APIView):
+    def post(self, request, format=None):
+        questions_data = request.data
+        serializer = QuestionSerializer(data=questions_data, many=True)
+        if serializer.is_valid():
 
-    def post(self, request, *args, **kwargs):
-        meeting_id = request.data.get('meeting_id')
-        doc_type = request.data.get('doc_type')
+            questions = [Question(**item) for item in serializer.validated_data]
+            questModels = Question.objects.filter(meeting_id=questions[0].meeting_id)
+            meeting = Meeting.objects.get(id=questions[0].meeting_id.id)
 
-        if not meeting_id or not doc_type:
-            return Response(
-                {'error': 'meeting_id and doc_type are required fields'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        meeting = Meeting.objects.filter(id=meeting_id).first()
+            for i in range(len(questModels)):
+                questModels[i].decision = questions[i].decision
+                questModels[i].yes = questions[i].yes
+                questModels[i].no = questions[i].no
+                questModels[i].idk = questions[i].idk
+                questModels[i].save()
 
-        if not meeting:
-            return Response(
-                {'error': f'Meeting with id={meeting_id} not found'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            zaoch_list = []
+            for quest in questModels:
+                list = [voteCount(quest, 1), voteCount(quest, 0), voteCount(quest, -1)]
+                zaoch_list.append(list)
 
-        if doc_type == 'Уведомление':
-            serializer_class = NotificationSerializer
-            doc_template = 'doc_templates/notification.docx'
-        elif doc_type == 'Бюллетень':
-            serializer_class = BulletinSerializer
-            doc_template = 'doc_templates/bulletin.docx'
-        elif doc_type == 'ПротоколСобрания':
-            serializer_class = MeetingProtocolSerializer
-            doc_template = 'doc_templates/protocol.docx'
-        elif doc_type == 'Решение':
-            serializer_class = DecisionSerializer
-            doc_template = 'doc_templates/decision.docx'
+            current_date = datetime.today().strftime('%d.%m.%Y')
+            protocol = create_protocol('./doc_templates/protocol_form.docx', meeting.type, meeting.date,
+                                       meeting.form, questModels, zaoch_list,
+                                       meeting.protocol_date,
+                                       current_date)
+
+            decision = create_decision('./doc_templates/solution_form.docx', meeting.type, meeting.date, meeting.form,
+                                       questModels, zaoch_list, meeting.protocol_date, current_date)
+
+            with open(f'./uploads/{protocol}', 'rb') as f:
+                file_data = f.read()
+            django_file = ContentFile(file_data)
+            my_file = File(file_data)
+            my_model = Doc(meeting_id=meeting)
+            my_model.file.save(f'Протокол_собрания_{meeting.id}.docx', django_file)
+            my_model.save()
+
+            with open(f'./uploads/{decision}', 'rb') as f:
+                file_data = f.read()
+            django_file = ContentFile(file_data)
+            my_file = File(file_data)
+            my_model = Doc(meeting_id=meeting)
+            my_model.file.save(f'Решение_{meeting.id}.docx', django_file)
+            my_model.save()
+
+            os.remove(f'./uploads/{decision}')
+            os.remove(f'./uploads/{protocol}')
+
+            return Response("Success", status=status.HTTP_201_CREATED)
         else:
-            return Response(
-                {'error': f'Document type "{doc_type}" is not supported'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serializer = serializer_class(data=request.data)
-        if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        with open(doc_template, 'rb') as file:
-            file_data = file.read()
-        django_file = ContentFile(file_data)
-
-        doc = Doc(name=doc_type + '_' + meeting_id,
-                  type=doc_type,
-                  meeting_id=meeting)
-        doc.file.save(f'{doc_type}_{meeting_id}.docx', django_file)
-        doc.save()
-
-        # Return the serialized data of the created document
-        return Response({
-            "data": "Success",
-            "id": doc.id
-        }, status=status.HTTP_201_CREATED)
