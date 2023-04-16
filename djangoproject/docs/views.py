@@ -93,6 +93,9 @@ class FileUploadView(APIView):
         my_model.file.save(f'Уведомление_{meeting_id}.docx', django_file)
         my_model.save()
 
+        os.remove(f'./uploads/{bulletin}')
+        os.remove(f'./uploads/{notification}')
+
         return Response({'message': 'Files created', 'meeting_id': meeting_id, 'questions': questions})
 
 
