@@ -155,6 +155,8 @@ class DecisionDataView(APIView):
             questions = [Question(**item) for item in serializer.validated_data]
             questModels = Question.objects.filter(meeting_id=questions[0].meeting_id)
             meeting = Meeting.objects.get(id=questions[0].meeting_id.id)
+            meeting.is_solved = True
+            meeting.save()
 
             for i in range(len(questModels)):
                 questModels[i].decision = questions[i].decision
