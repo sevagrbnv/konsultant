@@ -1,15 +1,9 @@
 # konsultant
 
-django
+## О репозитории
+Бэкенд сервиса для оповещения участников СНТ, электронного документооборота и проведения заочных голосований.
 
-django-filter
-
-djangorestframework
-
-django-cors-headers
-
-./manage.py makemigrations или python manage.py makemigrations
-
-./manage.py migrate или python manage.py migrate
-
-./manage.py runserver или python manage.py runserver
+## Инструменты
+1) Django Rest Framework
+2) SQLite3
+3) Python-docx
